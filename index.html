@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Finanzas Personales</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="dashboard">dashboard</a></li>
+            <li><a href="transacciones">transacciones</a></li>
+            <li><a href="categorias">categorias</a></li>
+            <li><a href="presupuestos">presupuestos</a></li>
+        </ul>
+    </nav>
+    <main>
+        <!-- Dashboard Section -->
+        <section id="dashboard" style="display:block;">
+            <h2>Dashboard</h2>
+            <div id="dashboard-summary">
+                <!-- Resumen del mes actual -->
+                <p>Ingresos: <span id="dashboard-ingresos">0</span></p>
+                <p>Gastos: <span id="dashboard-gastos">0</span></p>
+                <p>Balance: <span id="dashboard-balance">0</span></p>
+            </div>
+            <div id="dashboard-charts">
+                <!-- Espacio para gráficos -->
+                <canvas id="chart-gastos-categoria"></canvas>
+                <canvas id="chart-balance-mensual"></canvas>
+                <canvas id="chart-ingresos"></canvas>
+                <canvas id="chart-evolucion-balance"></canvas>
+            </div>
+            <div id="dashboard-transacciones-recientes">
+                <h3>Transacciones recientes</h3>
+                <ul id="transacciones-recientes-lista"></ul>
+            </div>
+        </section>
+
+        <!-- Transacciones Section -->
+        <section id="transacciones" style="display:none;">
+            <h2>Transacciones</h2>
+            <form id="form-transaccion">
+                <select name="tipo" required>
+                    <option value="">Tipo</option>
+                    <option value="ingreso">Ingreso</option>
+                    <option value="egreso">Egreso</option>
+                </select>
+                <input type="number" name="monto" placeholder="Monto" min="0.01" step="0.01" required>
+                <input type="date" name="fecha" required>
+                <select name="categoria" required>
+                    <option value="">Categoría</option>
+                    <!-- Opciones dinámicas -->
+                </select>
+                <input type="text" name="descripcion" placeholder="Descripción (opcional)">
+                <button type="submit">Registrar</button>
+            </form>
+            <div>
+                <input type="text" id="filtro-descripcion" placeholder="Buscar por descripción o categoría">
+                <select id="filtro-tipo">
+                    <option value="">Todos</option>
+                    <option value="ingreso">Ingresos</option>
+                    <option value="egreso">Egresos</option>
+                </select>
+            </div>
+            <table id="tabla-transacciones">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Monto</th>
+                        <th>Fecha</th>
+                        <th>Categoría</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Transacciones aquí -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Categorías Section -->
+        <section id="categorias" style="display:none;">
+            <h2>Categorías</h2>
+            <form id="form-categoria">
+                <input type="text" name="nombre" placeholder="Nueva categoría" required>
+                <button type="submit">Agregar</button>
+            </form>
+            <ul id="lista-categorias">
+                <!-- Lista de categorías aquí -->
+            </ul>
+        </section>
+
+        <!-- Presupuestos Section -->
+        <section id="presupuestos" style="display:none;">
+            <h2>Presupuestos</h2>
+            <form id="form-presupuesto">
+                <select name="categoria" required>
+                    <option value="">Categoría</option>
+                    <!-- Opciones dinámicas -->
+                </select>
+                <input type="number" name="monto" placeholder="Monto estimado" min="0.01" step="0.01" required>
+                <input type="month" name="mes" required>
+                <button type="submit">Asignar</button>
+            </form>
+            <table id="tabla-presupuestos">
+                <thead>
+                    <tr>
+                        <th>Categoría</th>
+                        <th>Mes</th>
+                        <th>Monto estimado</th>
+                        <th>Monto real</th>
+                        <th>Desviación</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Presupuestos aquí -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <script type="module" src="./index.js"></script>
+</body>
+</html>
