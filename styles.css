@@ -1,0 +1,16 @@
+/* Reset básico */
+body, h1, h2, h3, p, ul, li, form, input, select, button, table, th, td {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', 'Oswald', Arial, sans-serif;
+}
+
+/* Fondo y layout */
+body {
+    background: linear-gradient(135deg, #181818 0%, #23272f 100%);
+    color: #fff;
+    min-height: 100vh;
+    font-family: 'Montserrat', 'Oswald', Arial, sans-serif;
+    letter-spacing: 0.01em;
+}
