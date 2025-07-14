@@ -76,7 +76,7 @@ button:hover, form button:hover, .btn:hover, .get-started:hover{
 }
 
 /* Contenedor principal */
-main {
+main{
     max-width: 950px;
     margin: 2rem auto;
     background: #000;
@@ -90,7 +90,7 @@ main {
 }
 
 /* Efecto de pista en el fondo del main */
-main::before {
+main::before{
     content: "";
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -110,7 +110,7 @@ main::before {
 
 
 /* Títulos estilo F1 */
-h2 {
+h2{
     margin-bottom: 2rem;
     color: #ffd700;
     font-family: 'Oswald', 'Montserrat', Arial, sans-serif;
@@ -122,8 +122,7 @@ h2 {
     border-left: none;
     padding-left: 0;
 }
-
-h3 {
+h3{
     margin: 1.5rem 0 0.5rem 0;
     color: #c20021;
     font-family: 'Oswald', 'Montserrat', Arial, sans-serif;
@@ -132,3 +131,36 @@ h3 {
     text-transform: uppercase;
     letter-spacing: 0.06em;
 }
+
+/* Secciones */
+section{
+    margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Formularios */
+form{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+    z-index: 1;
+}
+form input, form select, form button {
+    padding: 0.6rem 1rem;
+    border: 2px solid #c20021;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #23272f;
+    color: #fff;
+    font-family: inherit;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+form input:focus, form select:focus {
+    border: 2px solid #ffd700;
+    outline: none;
+    box-shadow: 0 0 0 2px #ffd70044;
+}
+
