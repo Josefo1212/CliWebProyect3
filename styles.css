@@ -74,3 +74,36 @@ button:hover, form button:hover, .btn:hover, .get-started:hover{
     color: #23272f;
     box-shadow: 0 6px 24px #ffd70055;
 }
+
+/* Contenedor principal */
+main {
+    max-width: 950px;
+    margin: 2rem auto;
+    background: #000;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px #c2002122;
+    padding: 2.5rem 2rem;
+    font-family: 'Montserrat', Arial, sans-serif;
+    border: 2px solid #c20021;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto de pista en el fondo del main */
+main::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+        135deg,
+        transparent,
+        transparent 40px,
+        #fff 40px,
+        #fff 44px,
+        transparent 44px,
+        transparent 80px
+    );
+    opacity: 0.04;
+    z-index: 0;
+    pointer-events: none;
+}
