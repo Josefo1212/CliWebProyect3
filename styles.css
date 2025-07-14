@@ -107,3 +107,28 @@ main::before {
     z-index: 0;
     pointer-events: none;
 }
+
+
+/* Títulos estilo F1 */
+h2 {
+    margin-bottom: 2rem;
+    color: #ffd700;
+    font-family: 'Oswald', 'Montserrat', Arial, sans-serif;
+    font-size: 4rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 12px #c2002144;
+    border-left: none;
+    padding-left: 0;
+}
+
+h3 {
+    margin: 1.5rem 0 0.5rem 0;
+    color: #c20021;
+    font-family: 'Oswald', 'Montserrat', Arial, sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
