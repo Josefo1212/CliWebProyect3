@@ -1,5 +1,5 @@
 /* Reset básico */
-body, h1, h2, h3, p, ul, li, form, input, select, button, table, th, td {
+body, h1, h2, h3, p, ul, li, form, input, select, button, table, th, td{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -7,7 +7,7 @@ body, h1, h2, h3, p, ul, li, form, input, select, button, table, th, td {
 }
 
 /* Fondo y layout */
-body {
+body{
     background: linear-gradient(135deg, #181818 0%, #23272f 100%);
     color: #fff;
     min-height: 100vh;
@@ -16,7 +16,7 @@ body {
 }
 
 /* Barra de navegación estilo F1 */
-nav {
+nav{
     background: linear-gradient(180deg, #c20021 0%, #ff2a2a 80%, #23272f 100%);
     padding: 1rem 0;
     box-shadow: 0 4px 16px #c2002133;
@@ -26,14 +26,14 @@ nav {
     border-bottom-right-radius: 24px;
 }
 
-nav ul {
+nav ul{
     display: flex;
     justify-content: center;
     gap: 2.5rem;
     list-style: none;
 }
 
-nav a {
+nav a{
     color: #fff;
     text-decoration: none;
     font-weight: 700;
@@ -46,8 +46,31 @@ nav a {
     position: relative;
 }
 
-nav a:hover {
+nav a:hover{
     color: #ffd700;
     text-shadow: 0 2px 12px #ffd70088;
     border-bottom: 2px solid #ffd700;
+}
+
+
+/* Botón destacado estilo F1 */
+button, form button, .btn, .get-started{
+    background: linear-gradient(90deg, #c20021 60%, #ffd700 100%);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: 0.7rem 2rem;
+    font-size: 1.1rem;
+    font-family: 'Oswald', 'Montserrat', Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    box-shadow: 0 4px 16px #c2002133;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+button:hover, form button:hover, .btn:hover, .get-started:hover{
+    background: linear-gradient(90deg, #ffd700 60%, #c20021 100%);
+    color: #23272f;
+    box-shadow: 0 6px 24px #ffd70055;
 }
