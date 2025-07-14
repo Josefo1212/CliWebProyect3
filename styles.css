@@ -14,3 +14,15 @@ body {
     font-family: 'Montserrat', 'Oswald', Arial, sans-serif;
     letter-spacing: 0.01em;
 }
+
+/* Barra de navegación estilo F1 */
+nav {
+    background: linear-gradient(180deg, #c20021 0%, #ff2a2a 80%, #23272f 100%);
+    padding: 1rem 0;
+    box-shadow: 0 4px 16px #c2002133;
+    border-bottom: 4px solid #ffd700;
+    position: relative;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+
