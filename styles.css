@@ -8,7 +8,7 @@ body, h1, h2, h3, p, ul, li, form, input, select, button, table, th, td{
 
 /* Fondo y layout */
 body{
-    background: linear-gradient(135deg, #181818 0%, #23272f 100%);
+    background: #111215;
     color: #fff;
     min-height: 100vh;
     font-family: 'Montserrat', 'Oswald', Arial, sans-serif;
@@ -17,22 +17,24 @@ body{
 
 /* Barra de navegación estilo F1 */
 nav{
-    background: linear-gradient(180deg, #c20021 0%, #ff2a2a 80%, #23272f 100%);
-    padding: 1rem 0;
-    box-shadow: 0 4px 16px #c2002133;
-    border-bottom: 4px solid #ffd700;
-    position: relative;
-    border-bottom-left-radius: 24px;
-    border-bottom-right-radius: 24px;
+    background: #18191c;
+    padding: 0.5rem 0.5rem 1rem 2rem;
+    box-shadow: 0 2px 12px #0008;
+    border-bottom: 3px solid #e10600;
+    display: flex;
+    align-items: center;
 }
-
+nav img {
+    height: 58px;
+    margin-right: 24px;
+    filter: grayscale(0) brightness(1.1) contrast(1.2);
+}
 nav ul{
     display: flex;
-    justify-content: center;
-    gap: 2.5rem;
+    justify-content: flex-start;
+    gap: 2rem;
     list-style: none;
 }
-
 nav a{
     color: #fff;
     text-decoration: none;
@@ -40,51 +42,47 @@ nav a{
     text-transform: uppercase;
     font-family: 'Oswald', 'Montserrat', Arial, sans-serif;
     letter-spacing: 0.08em;
-    font-size: 1.1rem;
-    transition: color 0.2s, text-shadow 0.2s;
-    text-shadow: 0 2px 8px #c2002122;
-    position: relative;
+    font-size: 1.08rem;
+    transition: color 0.2s, border-bottom 0.2s;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 2px;
 }
-
-nav a:hover{
-    color: #ffd700;
-    text-shadow: 0 2px 12px #ffd70088;
-    border-bottom: 2px solid #ffd700;
+nav a:hover, nav a.active{
+    color: #e10600;
+    border-bottom: 2px solid #e10600;
 }
-
 
 /* Botón destacado estilo F1 */
 button, form button, .btn, .get-started{
-    background: linear-gradient(90deg, #c20021 60%, #ffd700 100%);
+    background: #e10600;
     color: #fff;
     border: none;
-    border-radius: 30px;
-    padding: 0.7rem 2rem;
-    font-size: 1.1rem;
+    border-radius: 24px;
+    padding: 0.6rem 1.6rem;
+    font-size: 1rem;
     font-family: 'Oswald', 'Montserrat', Arial, sans-serif;
     font-weight: 700;
     letter-spacing: 0.08em;
     cursor: pointer;
-    box-shadow: 0 4px 16px #c2002133;
+    box-shadow: 0 2px 8px #e1060030;
     transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
-
 button:hover, form button:hover, .btn:hover, .get-started:hover{
-    background: linear-gradient(90deg, #ffd700 60%, #c20021 100%);
-    color: #23272f;
-    box-shadow: 0 6px 24px #ffd70055;
+    background: #fff;
+    color: #e10600;
+    box-shadow: 0 4px 16px #e1060050;
 }
 
 /* Contenedor principal */
 main{
-    max-width: 950px;
-    margin: 2rem auto;
-    background: #000;
-    border-radius: 18px;
-    box-shadow: 0 8px 32px #c2002122;
-    padding: 2.5rem 2rem;
+    max-width: 1100px;
+    margin: 0.5rem auto;
+    background: #18191c;
+    border-radius: 14px;
+    box-shadow: 0 4px 24px #0007;
+    padding: 0.7rem 0.5rem;
     font-family: 'Montserrat', Arial, sans-serif;
-    border: 2px solid #c20021;
+    border: 1.5px solid #222;
     position: relative;
     overflow: hidden;
 }
@@ -97,36 +95,35 @@ main::before{
     background: repeating-linear-gradient(
         135deg,
         transparent,
-        transparent 40px,
-        #fff 40px,
-        #fff 44px,
-        transparent 44px,
-        transparent 80px
+        transparent 38px,
+        #fff1 38px,
+        #fff1 42px,
+        transparent 42px,
+        transparent 76px
     );
-    opacity: 0.04;
+    opacity: 0.03;
     z-index: 0;
     pointer-events: none;
 }
 
-
 /* Títulos estilo F1 */
 h2{
-    margin-bottom: 2rem;
-    color: #ffd700;
+    margin-bottom: 1.2rem;
+    color: #fff;
     font-family: 'Oswald', 'Montserrat', Arial, sans-serif;
-    font-size: 4rem;
+    font-size: 2.1rem;
     font-weight: 900;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    text-shadow: 0 2px 12px #c2002144;
-    border-left: none;
-    padding-left: 0;
+    text-shadow: 0 2px 10px #e1060020;
+    border-left: 5px solid #e10600;
+    padding-left: 0.7rem;
 }
 h3{
-    margin: 1.5rem 0 0.5rem 0;
-    color: #c20021;
+    margin: 1.2rem 0 0.5rem 0;
+    color: #e10600;
     font-family: 'Oswald', 'Montserrat', Arial, sans-serif;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -134,7 +131,7 @@ h3{
 
 /* Secciones */
 section{
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.2rem;
     position: relative;
     z-index: 1;
 }
@@ -144,68 +141,84 @@ form{
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
     align-items: center;
     z-index: 1;
 }
 form input, form select, form button{
-    padding: 0.6rem 1rem;
-    border: 2px solid #c20021;
+    padding: 0.5rem 1rem;
+    border: 1.5px solid #333;
     border-radius: 8px;
     font-size: 1rem;
-    background: #23272f;
+    background: #23242a;
     color: #fff;
     font-family: inherit;
     transition: border 0.2s, box-shadow 0.2s;
 }
 form input:focus, form select:focus{
-    border: 2px solid #ffd700;
+    border: 1.5px solid #e10600;
     outline: none;
-    box-shadow: 0 0 0 2px #ffd70044;
+    box-shadow: 0 0 0 2px #e1060030;
 }
 
 /* Resumen dashboard */
 #dashboard-summary{
     display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    margin-bottom: 2rem;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 #dashboard-summary p{
-    font-size: 1.3rem;
-    background: #000;
+    flex: 1 1 0;
+    font-size: 1rem;
+    background: #18191c;
     color: #fff;
-    border-radius: 0;
-    padding: 1.2rem 2rem;
+    border-radius: 8px;
+    padding: 0.7rem 0.5rem;
     box-shadow: none;
     font-weight: 400;
-    border: 2px solid #fff;
+    border: 1.5px solid #23242a;
     font-family: 'Montserrat', Arial, sans-serif;
-    margin-bottom: 1rem;
-    text-align: left;
+    margin-bottom: 0;
+    text-align: center;
+    margin-right: 0.5rem;
+    letter-spacing: 0.04em;
 }
-
+#dashboard-summary p:last-child {
+    margin-right: 0;
+}
 
 /* Gráficas estilo panel */
 #dashboard-charts{
-    display: none;
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
-
+#dashboard-charts canvas {
+    flex: 1 1 250px;
+    max-width: 300px;
+    max-height: 180px;
+    min-width: 220px;
+    min-height: 140px;
+    margin: 0;
+    background: #111215;
+    border-radius: 8px;
+    padding: 0.5rem;
+    border: 1.5px solid #23242a;
+}
 
 /* Transacciones recientes */
 #dashboard-transacciones-recientes{
-    margin-top: 2rem;
+    margin-top: 0.5rem;
 }
-#dashboard-transacciones-recientes h3{
-    color: #c20021;
-    font-family: 'Oswald', 'Montserrat', Arial, sans-serif;
-    font-size: 1.3rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 1rem;
+#dashboard-transacciones-recientes ul {
+    max-height: 100px;
+    overflow-y: auto;
+    padding-left: 1rem;
 }
-
 
 /* Categorías */
 #lista-categorias{
@@ -214,26 +227,60 @@ form input:focus, form select:focus{
 }
 #lista-categorias li{
     padding: 0.7rem 1rem;
-    background: #181818;
+    background: #18191c;
     border-radius: 8px;
     margin-bottom: 0.7rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: #ffd700;
+    color: #fff;
     font-weight: 700;
-    border-left: 6px solid #c20021;
+    border-left: 5px solid #e10600;
     font-family: 'Montserrat', Arial, sans-serif;
 }
-
 
 /* Filtros */
 #filtro-descripcion, #filtro-tipo{
     margin: 0.5rem 0.5rem 0.5rem 0;
     padding: 0.5rem 1rem;
     border-radius: 6px;
-    border: 2px solid #c20021;
-    background: #23272f;
+    border: 1.5px solid #23242a;
+    background: #23242a;
     color: #fff;
     font-family: inherit;
+}
+
+/* Tablas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #18191c;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+th, td {
+    padding: 0.6rem 0.4rem;
+    border-bottom: 1px solid #23242a;
+    text-align: left;
+}
+th {
+    background: #23242a;
+    color: #e10600;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.98rem;
+    letter-spacing: 0.04em;
+}
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* Scrollbar minimalista */
+::-webkit-scrollbar {
+    width: 7px;
+    background: #18191c;
+}
+::-webkit-scrollbar-thumb {
+    background: #23242a;
+    border-radius: 6px;
 }
