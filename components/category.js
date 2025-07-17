@@ -1,116 +1,99 @@
-import { abrirDB } from "./db.js";
+import { dbWrapper } from "./db.js";
 
 const CATEGORIAS_PREDEFINIDAS = [
     "Alimentación", "Transporte", "Ocio", "Servicios", "Salud", "Educación", "Otros"
 ];
 
-export async function inicializarCategorias() {
-    const db = await abrirDB();
-    const tx = db.transaction("categorias", "readonly");
-    const store = tx.objectStore("categorias");
-    const req = store.getAll();
-    req.onsuccess = function () {
-        if (req.result.length === 0) {
-            const txAdd = db.transaction("categorias", "readwrite");
-            const storeAdd = txAdd.objectStore("categorias");
-            CATEGORIAS_PREDEFINIDAS.forEach(nombre => {
-                storeAdd.add({ nombre });
-            });
-            txAdd.oncomplete = renderCategorias;
-        } else {
-            renderCategorias();
-        }
-    };
-}
+export class CategoriaComponent {
+    constructor() {
+        this.lista = document.getElementById("lista-categorias");
+        this.formCategoria = document.getElementById("form-categoria");
+        this.init();
+    }
 
-export async function renderCategorias() {
-    const db = await abrirDB();
-    const tx = db.transaction("categorias", "readonly");
-    const store = tx.objectStore("categorias");
-    const req = store.getAll();
-    req.onsuccess = function () {
-        const lista = document.getElementById("lista-categorias");
-        if (!lista) return;
-        lista.innerHTML = "";
-        req.result.forEach(cat => {
+    async init() {
+        let categorias = await dbWrapper.getAll("categorias");
+        if (categorias.length === 0) {
+            for (const nombre of CATEGORIAS_PREDEFINIDAS) {
+                await dbWrapper.add("categorias", { nombre });
+            }
+            categorias = await dbWrapper.getAll("categorias");
+        }
+        this.render(categorias);
+        this.setupFormCategoria();
+    }
+
+    async render(categorias = null) {
+        if (!this.lista) return;
+        if (!categorias) categorias = await dbWrapper.getAll("categorias");
+        this.lista.innerHTML = "";
+        categorias.forEach(cat => {
             const li = document.createElement("li");
             li.textContent = cat.nombre;
             const btnEliminar = document.createElement("button");
             btnEliminar.textContent = "Eliminar";
-            btnEliminar.onclick = () => eliminarCategoria(cat.nombre);
+            btnEliminar.onclick = () => this.eliminarCategoria(cat.nombre);
             li.appendChild(btnEliminar);
-            lista.appendChild(li);
+            this.lista.appendChild(li);
         });
-        actualizarSelectsCategorias(req.result.map(c => c.nombre));
-    };
-}
+        this.actualizarSelectsCategorias(categorias);
+    }
 
-function actualizarSelectsCategorias(categorias) {
-    const selects = [
-        ...document.querySelectorAll('form select[name="categoria"]')
-    ];
-    selects.forEach(select => {
-        const valorActual = select.value;
-        select.innerHTML = '<option value="">Categoría</option>';
-        categorias.forEach(cat => {
-            const opt = document.createElement("option");
-            opt.value = cat;
-            opt.textContent = cat;
-            select.appendChild(opt);
-        });
-        select.value = valorActual;
-    });
-}
-
-export async function agregarCategoria(nombre) {
-    nombre = nombre.trim();
-    if (!nombre) return;
-    const db = await abrirDB();
-    const tx = db.transaction("categorias", "readwrite");
-    const store = tx.objectStore("categorias");
-    const getReq = store.get(nombre);
-    getReq.onsuccess = function () {
-        if (getReq.result) {
-            alert("La categoría ya existe.");
-        } else {
-            store.add({ nombre });
-            tx.oncomplete = renderCategorias;
-        }
-    };
-}
-
-export async function eliminarCategoria(nombre) {
-    if (!confirm(`¿Eliminar la categoría "${nombre}" y todas sus transacciones asociadas?`)) return;
-    const db = await abrirDB();
-    // Elimina la categoría
-    const txCat = db.transaction("categorias", "readwrite");
-    txCat.objectStore("categorias").delete(nombre);
-    // Elimina transacciones asociadas
-    const txTrans = db.transaction("transacciones", "readwrite");
-    const storeTrans = txTrans.objectStore("transacciones");
-    storeTrans.openCursor().onsuccess = function (e) {
-        const cursor = e.target.result;
-        if (cursor) {
-            if (cursor.value.categoria === nombre) {
-                cursor.delete();
-            }
-            cursor.continue();
-        }
-    };
-    txCat.oncomplete = renderCategorias;
-    // Si tienes render de transacciones, llama aquí también
-    // txTrans.oncomplete = renderTransacciones;
-}
-
-// Maneja el formulario de agregar categoría
-export function setupFormCategoria() {
-    const formCategoria = document.getElementById("form-categoria");
-    if (formCategoria) {
-        formCategoria.addEventListener("submit", e => {
-            e.preventDefault();
-            const input = formCategoria.elements["nombre"];
-            agregarCategoria(input.value);
-            input.value = "";
+    actualizarSelectsCategorias(categorias) {
+        const selects = document.querySelectorAll('form select[name="categoria"]');
+        selects.forEach(select => {
+            const valorActual = select.value;
+            select.innerHTML = '<option value="">Categoría</option>';
+            categorias.forEach(cat => {
+                const opt = document.createElement("option");
+                opt.value = cat.nombre;
+                opt.textContent = cat.nombre;
+                select.appendChild(opt);
+            });
+            select.value = valorActual;
         });
     }
+
+    async agregarCategoria(nombre) {
+        nombre = nombre.trim();
+        if (!nombre) return;
+        const existente = await dbWrapper.get("categorias", nombre);
+        if (existente) {
+            alert("La categoría ya existe.");
+        } else {
+            await dbWrapper.add("categorias", { nombre });
+            this.render();
+        }
+    }
+
+    async eliminarCategoria(nombre) {
+        if (!confirm(`¿Eliminar la categoría "${nombre}" y todas sus transacciones asociadas?`)) return;
+        await dbWrapper.delete("categorias", nombre);
+        // Elimina transacciones asociadas
+        const db = await dbWrapper.open();
+        const tx = db.transaction("transacciones", "readwrite");
+        const store = tx.objectStore("transacciones");
+        store.openCursor().onsuccess = function (e) {
+            const cursor = e.target.result;
+            if (cursor) {
+                if (cursor.value.categoria === nombre) {
+                    cursor.delete();
+                }
+                cursor.continue();
+            }
+        };
+        tx.oncomplete = () => this.render();
+    }
+
+    setupFormCategoria() {
+        if (this.formCategoria) {
+            this.formCategoria.addEventListener("submit", e => {
+                e.preventDefault();
+                const input = this.formCategoria.elements["nombre"];
+                this.agregarCategoria(input.value);
+                input.value = "";
+            });
+        }
+    }
 }
+

@@ -1,5 +1,8 @@
-import { inicializarCategorias, setupFormCategoria } from "./components/category.js";
-import { setupDashboard, demoGraficosSiNoHayDatos } from "./components/dashboard.js";
+import { CategoriaComponent } from "./components/category.js";
+import { DashboardComponent } from "./components/dashboard.js";
+
+const categoriaComponent = new CategoriaComponent();
+const dashboardComponent = new DashboardComponent();
 
 // Navegación entre secciones
 function setupNavegacion() {
@@ -13,8 +16,10 @@ function setupNavegacion() {
                 document.getElementById(sec).style.display = (sec === destino) ? "block" : "none";
             });
             if (destino === "dashboard") {
-                setupDashboard();
-                demoGraficosSiNoHayDatos();
+                dashboardComponent.render();
+            }
+            if (destino === "categorias") {
+                categoriaComponent.render();
             }
         });
     });
@@ -22,10 +27,6 @@ function setupNavegacion() {
     secciones.forEach(sec => {
         document.getElementById(sec).style.display = (sec === "dashboard") ? "block" : "none";
     });
-    setupDashboard();
-    demoGraficosSiNoHayDatos();
+    dashboardComponent.render();
 }
-
-inicializarCategorias();
-setupFormCategoria();
 setupNavegacion();
