@@ -11,14 +11,32 @@
     <nav>
         <img src="assets/f1.png" alt="F1 Logo">
         <ul>
-            <li><a href="dashboard">dashboard</a></li>
-            <li><a href="transacciones">transacciones</a></li>
-            <li><a href="categorias">categorias</a></li>
-            <li><a href="presupuestos">presupuestos</a></li>
+            <li><a href="dashboard" class="active">Dashboard</a></li>
+            <li><a href="transacciones">Transacciones</a></li>
+            <li><a href="categorias">Categorias</a></li>
+            <li><a href="presupuestos">Presupuestos</a></li>
         </ul>
-    </nav>
-    <main>
-        <section id="dashboard" style="display:block;">
+    </nav> 
+
+    <div id="login-screen" style="display: flex;">
+        <div class="login-container">
+            <img src="assets/f1.png" alt="F1 Logo" class="login-logo">
+            <h2>PIT STOP FINANZAS</h2>
+            <form id="login-form" autocomplete="off">
+                <input type="text" id="login-username" placeholder="Usuario" required>
+                <input type="password" id="login-password" placeholder="Contraseña" required>
+                <button id="login-submit" type="submit">INICIAR SESIÓN</button>
+            </form>
+        </div>
+    </div>
+    <div id="loader" style="display:none;">
+        <div class="loader-container">
+            <img src="assets/rueda.png" alt="Rueda girando" class="loader-wheel">
+            <span class="loader-text">Cargando...</span>
+        </div>
+    </div>
+    <main style="display:none;">
+        <section id="dashboard">
             <h2>Dashboard</h2>
             <div id="dashboard-summary">
                 <p>Ingresos: <span id="dashboard-ingresos">0</span></p>
