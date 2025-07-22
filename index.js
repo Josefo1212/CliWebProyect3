@@ -1,8 +1,12 @@
 import { CategoriaComponent } from "./components/category.js";
 import { DashboardComponent } from "./components/dashboard.js";
+import { TransactionsComponent } from "./components/transactions.js";
+import { BudgetsComponent } from "./components/budgets.js";
 
 const categoriaComponent = new CategoriaComponent();
 const dashboardComponent = new DashboardComponent();
+const transactionsComponent = new TransactionsComponent();
+const budgetsComponent = new BudgetsComponent();
 
 function setupLogin() {
     const loginScreen = document.getElementById('login-screen');
@@ -60,6 +64,12 @@ function setupNavegacion() {
             }
             if (destino === "categorias") {
                 categoriaComponent.render();
+            }
+            if (destino === "transacciones") {
+                transactionsComponent.render();
+            }
+            if (destino === "presupuestos") {
+                budgetsComponent.render();
             }
         });
     });

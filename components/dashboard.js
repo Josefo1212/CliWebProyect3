@@ -3,7 +3,11 @@ import { dbWrapper } from "./db.js";
 export class DashboardComponent {
     constructor() {
         this.dashboard = document.getElementById("dashboard");
+        this.presupuestoResumenDiv = null;
         this.render();
+        // Escucha eventos personalizados para actualización en tiempo real
+        window.addEventListener("transacciones-actualizadas", () => this.render());
+        window.addEventListener("presupuestos-actualizados", () => this.render());
     }
 
     getMesActual() {
@@ -16,6 +20,7 @@ export class DashboardComponent {
         const mes = mesSeleccionado || (document.getElementById("dashboard-mes-filtro")?.value || this.getMesActual());
         await this.renderDashboardResumen(mes);
         await this.renderTransaccionesRecientes(mes);
+        await this.renderDashboardPresupuestoActual(mes); // NUEVO
         this.renderDashboardCharts(mes);
     }
 
@@ -51,6 +56,62 @@ export class DashboardComponent {
         });
     }
 
+    async renderDashboardPresupuestoActual(mesSeleccionado = null) {
+        // Muestra el estado del presupuesto actual por categoría
+        // Si no existe el store "presupuestos", no muestra nada
+        const db = await dbWrapper.open();
+        if (!db.objectStoreNames.contains("presupuestos")) return;
+
+        const mes = mesSeleccionado || this.getMesActual();
+        // Obtener presupuestos del mes
+        const presupuestos = await new Promise((resolve, reject) => {
+            const tx = db.transaction("presupuestos", "readonly");
+            const store = tx.objectStore("presupuestos");
+            const req = store.getAll();
+            req.onsuccess = () => {
+                // Solo presupuestos del mes seleccionado
+                resolve(req.result.filter(p => p.mes === mes));
+            };
+            req.onerror = reject;
+        });
+        if (!this.presupuestoResumenDiv) {
+            this.presupuestoResumenDiv = document.createElement("div");
+            this.presupuestoResumenDiv.id = "dashboard-presupuesto-estado";
+            this.presupuestoResumenDiv.style.marginBottom = "1rem";
+            this.dashboard.insertBefore(this.presupuestoResumenDiv, document.getElementById("dashboard-summary").nextSibling);
+        }
+        if (presupuestos.length === 0) {
+            this.presupuestoResumenDiv.innerHTML = "<p>No hay presupuestos asignados para este mes.</p>";
+            return;
+        }
+        // Obtener transacciones del mes
+        const transacciones = await dbWrapper.getAll("transacciones");
+        let html = `<table style="width:100%;background:#18191c;color:#fff;border-radius:8px;margin-bottom:0.5rem;">
+            <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Presupuesto</th>
+                    <th>Real</th>
+                    <th>Desviación</th>
+                </tr>
+            </thead>
+            <tbody>`;
+        presupuestos.forEach(p => {
+            const real = transacciones
+                .filter(t => t.categoria === p.categoria && t.fecha && t.fecha.startsWith(mes) && t.tipo === "egreso")
+                .reduce((acc, t) => acc + Number(t.monto), 0);
+            const desviacion = real - Number(p.monto);
+            html += `<tr>
+                <td>${p.categoria}</td>
+                <td>${Number(p.monto).toFixed(2)}</td>
+                <td>${real.toFixed(2)}</td>
+                <td style="color:${desviacion > 0 ? '#e10600' : '#0f0'}">${desviacion.toFixed(2)}</td>
+            </tr>`;
+        });
+        html += "</tbody></table>";
+        this.presupuestoResumenDiv.innerHTML = html;
+    }
+
     setupDashboardMesFiltro() {
         let filtro = document.getElementById("dashboard-mes-filtro");
         if (!filtro) {
@@ -67,8 +128,281 @@ export class DashboardComponent {
     }
 
     renderDashboardCharts(mesSeleccionado = null) {
-        // Intenta mostrar datos reales, si no hay, muestra demo
-        this.demoGraficosSiNoHayDatos();
+        this.mostrarGraficosSegunDatos(mesSeleccionado);
+    }
+
+    async mostrarGraficosSegunDatos(mesSeleccionado = null) {
+        const db = await dbWrapper.open();
+        const tx = db.transaction("transacciones", "readonly");
+        const store = tx.objectStore("transacciones");
+        store.count().onsuccess = async (e) => {
+            const chartsDiv = document.getElementById("dashboard-charts");
+            // Limpia todos los gráficos existentes
+            ["chart-gastos-categoria", "chart-balance-mensual", "chart-ingresos", "chart-evolucion-balance", "chart-distribucion"].forEach(id => {
+                const canvas = document.getElementById(id);
+                if (canvas && canvas.chartInstance) {
+                    canvas.chartInstance.destroy();
+                    canvas.chartInstance = null;
+                }
+                if (canvas) {
+                    const ctx = canvas.getContext("2d");
+                    ctx && ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            });
+
+            if (chartsDiv) chartsDiv.style.display = "flex";
+
+            if (e.target.result === 0) {
+                // Mostrar gráficos de ejemplo
+                // Ejemplo: asigna la instancia Chart a canvas.chartInstance para poder destruirla después
+                const c1 = document.getElementById("chart-gastos-categoria");
+                if (window.Chart && c1) c1.chartInstance = new Chart(c1, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Neumáticos', 'Transporte', 'Mecánicos'],
+                        datasets: [{
+                            data: [500, 300, 400],
+                            backgroundColor: ['#d30000', '#ff8800', '#ffffff']
+                        }]
+                    }
+                });
+                const c2 = document.getElementById("chart-balance-mensual");
+                if (window.Chart && c2) c2.chartInstance = new Chart(c2, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mayo', 'Junio', 'Julio'],
+                        datasets: [{
+                            label: 'Estimado',
+                            data: [1800, 2000, 2200],
+                            borderColor: '#ffffff',
+                            fill: false
+                        }, {
+                            label: 'Real',
+                            data: [1600, 1900, 1800],
+                            borderColor: '#d30000',
+                            fill: false
+                        }]
+                    }
+                });
+                const c3 = document.getElementById("chart-ingresos");
+                if (window.Chart && c3) c3.chartInstance = new Chart(c3, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Julio'],
+                        datasets: [
+                            {
+                                label: 'Estimado',
+                                data: [5000],
+                                backgroundColor: '#ffffff'
+                            },
+                            {
+                                label: 'Real',
+                                data: [4800],
+                                backgroundColor: '#d30000'
+                            }
+                        ]
+                    }
+                });
+                const c4 = document.getElementById("chart-evolucion-balance");
+                if (window.Chart && c4) c4.chartInstance = new Chart(c4, {
+                    type: 'line',
+                    data: {
+                        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'],
+                        datasets: [{
+                            label: 'Balance Mensual',
+                            data: [1200, 1300, 1500, 1600, 1800, 1900, 1800],
+                            borderColor: '#ff8800',
+                            fill: false
+                        }]
+                    }
+                });
+                const c5 = document.getElementById("chart-distribucion");
+                if (window.Chart && c5) c5.chartInstance = new Chart(c5, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Ingresos', 'Gastos'],
+                        datasets: [{
+                            label: 'Julio',
+                            data: [5000, 3200],
+                            backgroundColor: ['#ffffff', '#d30000']
+                        }]
+                    }
+                });
+            } else {
+                // Mostrar gráficos reales con datos reales
+                const transacciones = await dbWrapper.getAll("transacciones");
+                const presupuestos = db.objectStoreNames.contains("presupuestos")
+                    ? await dbWrapper.getAll("presupuestos")
+                    : [];
+
+                // --- Gastos por categoría (doughnut) ---
+                const mes = mesSeleccionado || this.getMesActual();
+                const gastosMes = transacciones.filter(t => t.tipo === "egreso" && t.fecha && t.fecha.startsWith(mes));
+                const gastosPorCategoria = {};
+                gastosMes.forEach(t => {
+                    gastosPorCategoria[t.categoria] = (gastosPorCategoria[t.categoria] || 0) + Number(t.monto);
+                });
+                const catLabels = Object.keys(gastosPorCategoria);
+                const catData = Object.values(gastosPorCategoria);
+                const catColors = catLabels.map((_, i) => ["#e10600", "#ff8800", "#fff", "#00bfff", "#00ff88", "#ff00cc", "#ffcc00"][i % 7]);
+                const c1 = document.getElementById("chart-gastos-categoria");
+                if (window.Chart && c1) c1.chartInstance = new Chart(c1, {
+                    type: 'doughnut',
+                    data: {
+                        labels: catLabels,
+                        datasets: [{
+                            data: catData,
+                            backgroundColor: catColors
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { display: true } },
+                        responsive: true
+                    }
+                });
+
+                // --- Balance mensual (line) ---
+                // Estimado: suma de presupuestos de egreso por mes
+                // Real: suma de egresos por mes
+                const meses = [];
+                const realPorMes = {};
+                const estimadoPorMes = {};
+                transacciones.forEach(t => {
+                    if (!t.fecha) return;
+                    const mes = t.fecha.slice(0, 7);
+                    if (!meses.includes(mes)) meses.push(mes);
+                    if (t.tipo === "egreso") {
+                        realPorMes[mes] = (realPorMes[mes] || 0) + Number(t.monto);
+                    }
+                });
+                presupuestos.forEach(p => {
+                    if (!meses.includes(p.mes)) meses.push(p.mes);
+                    if (p.categoria && p.monto && p.mes) {
+                        estimadoPorMes[p.mes] = (estimadoPorMes[p.mes] || 0) + Number(p.monto);
+                    }
+                });
+                meses.sort();
+                const c2 = document.getElementById("chart-balance-mensual");
+                if (window.Chart && c2) c2.chartInstance = new Chart(c2, {
+                    type: 'line',
+                    data: {
+                        labels: meses,
+                        datasets: [
+                            {
+                                label: 'Estimado',
+                                data: meses.map(m => estimadoPorMes[m] || 0),
+                                borderColor: '#ffffff',
+                                fill: false
+                            },
+                            {
+                                label: 'Real',
+                                data: meses.map(m => realPorMes[m] || 0),
+                                borderColor: '#e10600',
+                                fill: false
+                            }
+                        ]
+                    },
+                    options: {
+                        plugins: { legend: { display: true } },
+                        responsive: true,
+                        scales: { x: { display: true }, y: { display: true } }
+                    }
+                });
+
+                // --- Ingresos estimados vs reales (bar) ---
+                // Estimado: presupuestos de ingresos por mes (si existen)
+                // Real: suma de ingresos por mes
+                const ingresosPorMes = {};
+                const ingresosEstimadosPorMes = {};
+                transacciones.forEach(t => {
+                    if (!t.fecha) return;
+                    const mes = t.fecha.slice(0, 7);
+                    if (t.tipo === "ingreso") {
+                        ingresosPorMes[mes] = (ingresosPorMes[mes] || 0) + Number(t.monto);
+                    }
+                });
+                presupuestos.forEach(p => {
+                    if (p.tipo === "ingreso" && p.mes) {
+                        ingresosEstimadosPorMes[p.mes] = (ingresosEstimadosPorMes[p.mes] || 0) + Number(p.monto);
+                    }
+                });
+                // Si no hay presupuestos de ingresos, solo muestra reales
+                const mesesIngresos = Array.from(new Set([...Object.keys(ingresosPorMes), ...Object.keys(ingresosEstimadosPorMes)])).sort();
+                const c3 = document.getElementById("chart-ingresos");
+                if (window.Chart && c3) c3.chartInstance = new Chart(c3, {
+                    type: 'bar',
+                    data: {
+                        labels: mesesIngresos,
+                        datasets: [
+                            {
+                                label: 'Estimado',
+                                data: mesesIngresos.map(m => ingresosEstimadosPorMes[m] || 0),
+                                backgroundColor: '#ffffff'
+                            },
+                            {
+                                label: 'Real',
+                                data: mesesIngresos.map(m => ingresosPorMes[m] || 0),
+                                backgroundColor: '#e10600'
+                            }
+                        ]
+                    },
+                    options: {
+                        plugins: { legend: { display: true } },
+                        responsive: true,
+                        scales: { x: { display: true }, y: { display: true } }
+                    }
+                });
+
+                // --- Evolución del balance mensual (line) ---
+                // Balance = ingresos - egresos por mes
+                const balancePorMes = {};
+                meses.forEach(m => {
+                    const ingresos = ingresosPorMes[m] || 0;
+                    const egresos = realPorMes[m] || 0;
+                    balancePorMes[m] = ingresos - egresos;
+                });
+                const c4 = document.getElementById("chart-evolucion-balance");
+                if (window.Chart && c4) c4.chartInstance = new Chart(c4, {
+                    type: 'line',
+                    data: {
+                        labels: meses,
+                        datasets: [{
+                            label: 'Balance Mensual',
+                            data: meses.map(m => balancePorMes[m] || 0),
+                            borderColor: '#ff8800',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { display: true } },
+                        responsive: true,
+                        scales: { x: { display: true }, y: { display: true } }
+                    }
+                });
+
+                // --- Distribución ingresos/gastos (bar) ---
+                // Para el mes seleccionado
+                const ingresosMes = transacciones.filter(t => t.tipo === "ingreso" && t.fecha && t.fecha.startsWith(mes)).reduce((acc, t) => acc + Number(t.monto), 0);
+                const egresosMes = gastosMes.reduce((acc, t) => acc + Number(t.monto), 0);
+                const c5 = document.getElementById("chart-distribucion");
+                if (window.Chart && c5) c5.chartInstance = new Chart(c5, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Ingresos', 'Gastos'],
+                        datasets: [{
+                            label: mes,
+                            data: [ingresosMes, egresosMes],
+                            backgroundColor: ['#ffffff', '#e10600']
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { display: true } },
+                        responsive: true,
+                        scales: { x: { display: true }, y: { display: true } }
+                    }
+                });
+            }
+        };
     }
 
     async demoGraficosSiNoHayDatos() {

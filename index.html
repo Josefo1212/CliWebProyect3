@@ -109,6 +109,11 @@
         <section id="presupuestos" style="display:none;">
             <h2>Presupuestos</h2>
             <form id="form-presupuesto">
+                <select name="tipo" required>
+                    <option value="">Tipo</option>
+                    <option value="egreso">Egreso</option>
+                    <option value="ingreso">Ingreso</option>
+                </select>
                 <select name="categoria" required>
                     <option value="">Categoría</option>
                 </select>
@@ -119,6 +124,7 @@
             <table id="tabla-presupuestos">
                 <thead>
                     <tr>
+                        <th>Tipo</th>
                         <th>Categoría</th>
                         <th>Mes</th>
                         <th>Monto estimado</th>

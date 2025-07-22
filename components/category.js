@@ -8,6 +8,7 @@ export class CategoriaComponent {
     constructor() {
         this.lista = document.getElementById("lista-categorias");
         this.formCategoria = document.getElementById("form-categoria");
+        this.editandoNombre = null;
         this.init();
     }
 
@@ -29,11 +30,38 @@ export class CategoriaComponent {
         this.lista.innerHTML = "";
         categorias.forEach(cat => {
             const li = document.createElement("li");
-            li.textContent = cat.nombre;
-            const btnEliminar = document.createElement("button");
-            btnEliminar.textContent = "Eliminar";
-            btnEliminar.onclick = () => this.eliminarCategoria(cat.nombre);
-            li.appendChild(btnEliminar);
+            if (this.editandoNombre === cat.nombre) {
+                // Formulario de edición en línea
+                li.innerHTML = `
+                    <form class="form-editar-categoria" style="display:inline;">
+                        <input type="text" name="nuevoNombre" value="${cat.nombre}" required style="width:120px;">
+                        <button type="submit">Guardar</button>
+                        <button type="button" class="btn-cancelar">Cancelar</button>
+                    </form>
+                `;
+                li.querySelector("form").onsubmit = e => {
+                    e.preventDefault();
+                    const nuevoNombre = li.querySelector('input[name="nuevoNombre"]').value.trim();
+                    this.guardarEdicionCategoria(cat.nombre, nuevoNombre);
+                };
+                li.querySelector(".btn-cancelar").onclick = () => {
+                    this.editandoNombre = null;
+                    this.render();
+                };
+            } else {
+                li.textContent = cat.nombre;
+                const btnEditar = document.createElement("button");
+                btnEditar.textContent = "Editar";
+                btnEditar.onclick = () => {
+                    this.editandoNombre = cat.nombre;
+                    this.render();
+                };
+                const btnEliminar = document.createElement("button");
+                btnEliminar.textContent = "Eliminar";
+                btnEliminar.onclick = () => this.eliminarCategoria(cat.nombre);
+                li.appendChild(btnEditar);
+                li.appendChild(btnEliminar);
+            }
             this.lista.appendChild(li);
         });
         this.actualizarSelectsCategorias(categorias);
@@ -66,6 +94,41 @@ export class CategoriaComponent {
         }
     }
 
+    async guardarEdicionCategoria(nombreViejo, nombreNuevo) {
+        if (!nombreNuevo || nombreNuevo === nombreViejo) {
+            this.editandoNombre = null;
+            this.render();
+            return;
+        }
+        const existe = await dbWrapper.get("categorias", nombreNuevo);
+        if (existe) {
+            alert("Ya existe una categoría con ese nombre.");
+            return;
+        }
+        // Actualiza la categoría
+        await dbWrapper.delete("categorias", nombreViejo);
+        await dbWrapper.add("categorias", { nombre: nombreNuevo });
+        // Actualiza transacciones asociadas
+        const db = await dbWrapper.open();
+        const tx = db.transaction("transacciones", "readwrite");
+        const store = tx.objectStore("transacciones");
+        store.openCursor().onsuccess = function (e) {
+            const cursor = e.target.result;
+            if (cursor) {
+                if (cursor.value.categoria === nombreViejo) {
+                    const updated = { ...cursor.value, categoria: nombreNuevo };
+                    cursor.update(updated);
+                }
+                cursor.continue();
+            }
+        };
+        tx.oncomplete = () => {
+            this.editandoNombre = null;
+            this.render();
+            window.dispatchEvent(new Event("transacciones-actualizadas"));
+        };
+    }
+
     async eliminarCategoria(nombre) {
         if (!confirm(`¿Eliminar la categoría "${nombre}" y todas sus transacciones asociadas?`)) return;
         await dbWrapper.delete("categorias", nombre);
@@ -82,7 +145,10 @@ export class CategoriaComponent {
                 cursor.continue();
             }
         };
-        tx.oncomplete = () => this.render();
+        tx.oncomplete = () => {
+            this.render();
+            window.dispatchEvent(new Event("transacciones-actualizadas"));
+        };
     }
 
     setupFormCategoria() {

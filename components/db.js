@@ -1,5 +1,5 @@
 const DB_NAME = "finanzas";
-const DB_VERSION = 1;
+const DB_VERSION = 2; // Incrementa versión
 
 export class DBWrapper {
     constructor() {
@@ -17,6 +17,10 @@ export class DBWrapper {
                 }
                 if (!db.objectStoreNames.contains("transacciones")) {
                     db.createObjectStore("transacciones", { keyPath: "id" });
+                }
+                // NUEVO: store presupuestos
+                if (!db.objectStoreNames.contains("presupuestos")) {
+                    db.createObjectStore("presupuestos", { keyPath: "id" });
                 }
             };
             request.onsuccess = (e) => {
@@ -67,6 +71,17 @@ export class DBWrapper {
             const store = tx.objectStore(storeName);
             const req = store.delete(key);
             req.onsuccess = () => resolve();
+            req.onerror = reject;
+        });
+    }
+
+    async update(storeName, value) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(storeName, "readwrite");
+            const store = tx.objectStore(storeName);
+            const req = store.put(value);
+            req.onsuccess = () => resolve(req.result);
             req.onerror = reject;
         });
     }
