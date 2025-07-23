@@ -161,80 +161,109 @@ export class DashboardComponent {
 
             if (e.target.result === 0) {
                 // Mostrar gráficos de ejemplo
-                // Ejemplo: asigna la instancia Chart a canvas.chartInstance para poder destruirla después
                 const c1 = document.getElementById("chart-gastos-categoria");
-                if (window.Chart && c1) c1.chartInstance = new Chart(c1, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Neumáticos', 'Transporte', 'Mecánicos'],
-                        datasets: [{
-                            data: [500, 300, 400],
-                            backgroundColor: ['#d30000', '#ff8800', '#ffffff']
-                        }]
+                if (window.Chart && c1) {
+                    if (c1.chartInstance) {
+                        c1.chartInstance.destroy();
+                        c1.chartInstance = null;
                     }
-                });
+                    c1.chartInstance = new Chart(c1, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Neumáticos', 'Transporte', 'Mecánicos'],
+                            datasets: [{
+                                data: [500, 300, 400],
+                                backgroundColor: ['#d30000', '#ff8800', '#ffffff']
+                            }]
+                        }
+                    });
+                }
                 const c2 = document.getElementById("chart-balance-mensual");
-                if (window.Chart && c2) c2.chartInstance = new Chart(c2, {
-                    type: 'line',
-                    data: {
-                        labels: ['Mayo', 'Junio', 'Julio'],
-                        datasets: [{
-                            label: 'Estimado',
-                            data: [1800, 2000, 2200],
-                            borderColor: '#ffffff',
-                            fill: false
-                        }, {
-                            label: 'Real',
-                            data: [1600, 1900, 1800],
-                            borderColor: '#d30000',
-                            fill: false
-                        }]
+                if (window.Chart && c2) {
+                    if (c2.chartInstance) {
+                        c2.chartInstance.destroy();
+                        c2.chartInstance = null;
                     }
-                });
-                const c3 = document.getElementById("chart-ingresos");
-                if (window.Chart && c3) c3.chartInstance = new Chart(c3, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Julio'],
-                        datasets: [
-                            {
+                    c2.chartInstance = new Chart(c2, {
+                        type: 'line',
+                        data: {
+                            labels: ['Mayo', 'Junio', 'Julio'],
+                            datasets: [{
                                 label: 'Estimado',
-                                data: [5000],
-                                backgroundColor: '#ffffff'
-                            },
-                            {
+                                data: [1800, 2000, 2200],
+                                borderColor: '#ffffff',
+                                fill: false
+                            }, {
                                 label: 'Real',
-                                data: [4800],
-                                backgroundColor: '#d30000'
-                            }
-                        ]
+                                data: [1600, 1900, 1800],
+                                borderColor: '#d30000',
+                                fill: false
+                            }]
+                        }
+                    });
+                }
+                const c3 = document.getElementById("chart-ingresos");
+                if (window.Chart && c3) {
+                    if (c3.chartInstance) {
+                        c3.chartInstance.destroy();
+                        c3.chartInstance = null;
                     }
-                });
+                    c3.chartInstance = new Chart(c3, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Julio'],
+                            datasets: [
+                                {
+                                    label: 'Estimado',
+                                    data: [5000],
+                                    backgroundColor: '#ffffff'
+                                },
+                                {
+                                    label: 'Real',
+                                    data: [4800],
+                                    backgroundColor: '#d30000'
+                                }
+                            ]
+                        }
+                    });
+                }
                 const c4 = document.getElementById("chart-evolucion-balance");
-                if (window.Chart && c4) c4.chartInstance = new Chart(c4, {
-                    type: 'line',
-                    data: {
-                        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'],
-                        datasets: [{
-                            label: 'Balance Mensual',
-                            data: [1200, 1300, 1500, 1600, 1800, 1900, 1800],
-                            borderColor: '#ff8800',
-                            fill: false
-                        }]
+                if (window.Chart && c4) {
+                    if (c4.chartInstance) {
+                        c4.chartInstance.destroy();
+                        c4.chartInstance = null;
                     }
-                });
+                    c4.chartInstance = new Chart(c4, {
+                        type: 'line',
+                        data: {
+                            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'],
+                            datasets: [{
+                                label: 'Balance Mensual',
+                                data: [1200, 1300, 1500, 1600, 1800, 1900, 1800],
+                                borderColor: '#ff8800',
+                                fill: false
+                            }]
+                        }
+                    });
+                }
                 const c5 = document.getElementById("chart-distribucion");
-                if (window.Chart && c5) c5.chartInstance = new Chart(c5, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Ingresos', 'Gastos'],
-                        datasets: [{
-                            label: 'Julio',
-                            data: [5000, 3200],
-                            backgroundColor: ['#ffffff', '#d30000']
-                        }]
+                if (window.Chart && c5) {
+                    if (c5.chartInstance) {
+                        c5.chartInstance.destroy();
+                        c5.chartInstance = null;
                     }
-                });
+                    c5.chartInstance = new Chart(c5, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Ingresos', 'Gastos'],
+                            datasets: [{
+                                label: 'Julio',
+                                data: [5000, 3200],
+                                backgroundColor: ['#ffffff', '#d30000']
+                            }]
+                        }
+                    });
+                }
             } else {
                 // Mostrar gráficos reales con datos reales
                 const transacciones = await dbWrapper.getAll("transacciones");
@@ -253,20 +282,26 @@ export class DashboardComponent {
                 const catData = Object.values(gastosPorCategoria);
                 const catColors = catLabels.map((_, i) => ["#e10600", "#ff8800", "#fff", "#00bfff", "#00ff88", "#ff00cc", "#ffcc00"][i % 7]);
                 const c1 = document.getElementById("chart-gastos-categoria");
-                if (window.Chart && c1) c1.chartInstance = new Chart(c1, {
-                    type: 'doughnut',
-                    data: {
-                        labels: catLabels,
-                        datasets: [{
-                            data: catData,
-                            backgroundColor: catColors
-                        }]
-                    },
-                    options: {
-                        plugins: { legend: { display: true } },
-                        responsive: true
+                if (window.Chart && c1) {
+                    if (c1.chartInstance) {
+                        c1.chartInstance.destroy();
+                        c1.chartInstance = null;
                     }
-                });
+                    c1.chartInstance = new Chart(c1, {
+                        type: 'doughnut',
+                        data: {
+                            labels: catLabels,
+                            datasets: [{
+                                data: catData,
+                                backgroundColor: catColors
+                            }]
+                        },
+                        options: {
+                            plugins: { legend: { display: true } },
+                            responsive: true
+                        }
+                    });
+                }
 
                 // --- Balance mensual (line) ---
                 // Estimado: suma de presupuestos de egreso por mes
@@ -290,16 +325,21 @@ export class DashboardComponent {
                 });
                 meses.sort();
                 const c2 = document.getElementById("chart-balance-mensual");
-                if (window.Chart && c2) c2.chartInstance = new Chart(c2, {
-                    type: 'line',
-                    data: {
-                        labels: meses,
-                        datasets: [
-                            {
-                                label: 'Estimado',
-                                data: meses.map(m => estimadoPorMes[m] || 0),
-                                borderColor: '#ffffff',
-                                fill: false
+                if (window.Chart && c2) {
+                    if (c2.chartInstance) {
+                        c2.chartInstance.destroy();
+                        c2.chartInstance = null;
+                    }
+                    c2.chartInstance = new Chart(c2, {
+                        type: 'line',
+                        data: {
+                            labels: meses,
+                            datasets: [
+                                {
+                                    label: 'Estimado',
+                                    data: meses.map(m => estimadoPorMes[m] || 0),
+                                    borderColor: '#ffffff',
+                                    fill: false
                             },
                             {
                                 label: 'Real',
@@ -315,6 +355,7 @@ export class DashboardComponent {
                         scales: { x: { display: true }, y: { display: true } }
                     }
                 });
+            }
 
                 // --- Ingresos estimados vs reales (bar) ---
                 // Estimado: presupuestos de ingresos por mes (si existen)
@@ -336,29 +377,35 @@ export class DashboardComponent {
                 // Si no hay presupuestos de ingresos, solo muestra reales
                 const mesesIngresos = Array.from(new Set([...Object.keys(ingresosPorMes), ...Object.keys(ingresosEstimadosPorMes)])).sort();
                 const c3 = document.getElementById("chart-ingresos");
-                if (window.Chart && c3) c3.chartInstance = new Chart(c3, {
-                    type: 'bar',
-                    data: {
-                        labels: mesesIngresos,
-                        datasets: [
-                            {
-                                label: 'Estimado',
-                                data: mesesIngresos.map(m => ingresosEstimadosPorMes[m] || 0),
-                                backgroundColor: '#ffffff'
-                            },
-                            {
-                                label: 'Real',
-                                data: mesesIngresos.map(m => ingresosPorMes[m] || 0),
-                                backgroundColor: '#e10600'
-                            }
-                        ]
-                    },
-                    options: {
-                        plugins: { legend: { display: true } },
-                        responsive: true,
-                        scales: { x: { display: true }, y: { display: true } }
+                if (window.Chart && c3) {
+                    if (c3.chartInstance) {
+                        c3.chartInstance.destroy();
+                        c3.chartInstance = null;
                     }
-                });
+                    c3.chartInstance = new Chart(c3, {
+                        type: 'bar',
+                        data: {
+                            labels: mesesIngresos,
+                            datasets: [
+                                {
+                                    label: 'Estimado',
+                                    data: mesesIngresos.map(m => ingresosEstimadosPorMes[m] || 0),
+                                    backgroundColor: '#ffffff'
+                                },
+                                {
+                                    label: 'Real',
+                                    data: mesesIngresos.map(m => ingresosPorMes[m] || 0),
+                                    backgroundColor: '#e10600'
+                                }
+                            ]
+                        },
+                        options: {
+                            plugins: { legend: { display: true } },
+                            responsive: true,
+                            scales: { x: { display: true }, y: { display: true } }
+                        }
+                    });
+                }
 
                 // Balance = ingresos - egresos por mes
                 const balancePorMes = {};
@@ -368,45 +415,57 @@ export class DashboardComponent {
                     balancePorMes[m] = ingresos - egresos;
                 });
                 const c4 = document.getElementById("chart-evolucion-balance");
-                if (window.Chart && c4) c4.chartInstance = new Chart(c4, {
-                    type: 'line',
-                    data: {
-                        labels: meses,
-                        datasets: [{
-                            label: 'Balance Mensual',
-                            data: meses.map(m => balancePorMes[m] || 0),
-                            borderColor: '#ff8800',
-                            fill: false
-                        }]
-                    },
-                    options: {
-                        plugins: { legend: { display: true } },
-                        responsive: true,
-                        scales: { x: { display: true }, y: { display: true } }
+                if (window.Chart && c4) {
+                    if (c4.chartInstance) {
+                        c4.chartInstance.destroy();
+                        c4.chartInstance = null;
                     }
-                });
+                    c4.chartInstance = new Chart(c4, {
+                        type: 'line',
+                        data: {
+                            labels: meses,
+                            datasets: [{
+                                label: 'Balance Mensual',
+                                data: meses.map(m => balancePorMes[m] || 0),
+                                borderColor: '#ff8800',
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            plugins: { legend: { display: true } },
+                            responsive: true,
+                            scales: { x: { display: true }, y: { display: true } }
+                        }
+                    });
+                }
 
                 // --- Distribución ingresos/gastos (bar) ---
                 // Para el mes seleccionado
                 const ingresosMes = transacciones.filter(t => t.tipo === "ingreso" && t.fecha && t.fecha.startsWith(mes)).reduce((acc, t) => acc + Number(t.monto), 0);
                 const egresosMes = gastosMes.reduce((acc, t) => acc + Number(t.monto), 0);
                 const c5 = document.getElementById("chart-distribucion");
-                if (window.Chart && c5) c5.chartInstance = new Chart(c5, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Ingresos', 'Gastos'],
-                        datasets: [{
-                            label: mes,
-                            data: [ingresosMes, egresosMes],
-                            backgroundColor: ['#ffffff', '#e10600']
-                        }]
-                    },
-                    options: {
-                        plugins: { legend: { display: true } },
-                        responsive: true,
-                        scales: { x: { display: true }, y: { display: true } }
+                if (window.Chart && c5) {
+                    if (c5.chartInstance) {
+                        c5.chartInstance.destroy();
+                        c5.chartInstance = null;
                     }
-                });
+                    c5.chartInstance = new Chart(c5, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Ingresos', 'Gastos'],
+                            datasets: [{
+                                label: mes,
+                                data: [ingresosMes, egresosMes],
+                                backgroundColor: ['#ffffff', '#e10600']
+                            }]
+                        },
+                        options: {
+                            plugins: { legend: { display: true } },
+                            responsive: true,
+                            scales: { x: { display: true }, y: { display: true } }
+                        }
+                    });
+                }
             }
         };
     }
