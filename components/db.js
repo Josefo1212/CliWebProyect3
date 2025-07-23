@@ -18,7 +18,6 @@ export class DBWrapper {
                 if (!db.objectStoreNames.contains("transacciones")) {
                     db.createObjectStore("transacciones", { keyPath: "id" });
                 }
-                // NUEVO: store presupuestos
                 if (!db.objectStoreNames.contains("presupuestos")) {
                     db.createObjectStore("presupuestos", { keyPath: "id" });
                 }

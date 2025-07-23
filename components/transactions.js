@@ -7,7 +7,6 @@ export class TransactionsComponent {
         this.tabla = document.getElementById("tabla-transacciones").querySelector("tbody");
         this.filtroDescripcion = document.getElementById("filtro-descripcion");
         this.filtroTipo = document.getElementById("filtro-tipo");
-        // NUEVO: Filtro por categoría
         this.filtroCategoria = null;
         this.editandoId = null;
         this.init();

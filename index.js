@@ -2,6 +2,7 @@ import { CategoriaComponent } from "./components/category.js";
 import { DashboardComponent } from "./components/dashboard.js";
 import { TransactionsComponent } from "./components/transactions.js";
 import { BudgetsComponent } from "./components/budgets.js";
+import { LoginComponent } from "./components/login.js";
 
 
 document.body.addEventListener('click', () => {
@@ -18,99 +19,11 @@ const categoriaComponent = new CategoriaComponent();
 const dashboardComponent = new DashboardComponent();
 const transactionsComponent = new TransactionsComponent();
 const budgetsComponent = new BudgetsComponent();
+const loginComponent = new LoginComponent();
 
-function setupLogin() {
-    const loginScreen = document.getElementById('login-screen');
-    const mainContent = document.querySelector('main');
-    const nav = document.querySelector('nav');
-    const loginForm = document.getElementById('login-form');
-    const loginBtn = document.getElementById('login-submit');
-    const loader = document.getElementById('loader');
-    const showCreateAccountBtn = document.getElementById('show-create-account');
-    const createAccountScreen = document.getElementById('create-account-screen');
-    const backToLoginBtn = document.getElementById('back-to-login');
-    const createAccountForm = document.getElementById('create-account-form');
-    const createAccountSubmit = document.getElementById('create-account-submit');
-
-    // Mostrar pantalla de login
-    loginScreen.style.display = 'flex';
-    mainContent.style.display = 'none';
-    nav.style.display = 'none';
-    createAccountScreen.style.display = 'none';
-
-
-
-
-
-
-    // Mostrar pantalla de crear cuenta
-    showCreateAccountBtn.addEventListener('click', () => {
-        loginScreen.style.display = 'none';
-        createAccountScreen.style.display = 'flex';
-    });
-
-    // Volver al login desde crear cuenta
-    backToLoginBtn.addEventListener('click', () => {
-        createAccountScreen.style.display = 'none';
-        loginScreen.style.display = 'flex';
-    });
-
-    // Crear cuenta
-    createAccountForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const newUser = document.getElementById('create-username').value;
-        const newPass = document.getElementById('create-password').value;
-        if (newUser && newPass) {
-            // Guardar usuario y contraseña en localStorage (simple, no seguro)
-            localStorage.setItem('f1-finanzas-user', newUser);
-            localStorage.setItem('f1-finanzas-pass', newPass);
-            alert('Cuenta creada exitosamente. Ahora puedes iniciar sesión.');
-            createAccountScreen.style.display = 'none';
-            loginScreen.style.display = 'flex';
-        } else {
-            alert('Debes ingresar usuario y contraseña.');
-        }
-    });
-
-    // Login
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const username = document.getElementById('login-username').value;
-        const password = document.getElementById('login-password').value;
-        const savedUser = localStorage.getItem('f1-finanzas-user');
-        const savedPass = localStorage.getItem('f1-finanzas-pass');
-        
-        // Validación simple (en producción usar autenticación segura)
-        if(username && password) {
-        if (savedUser && savedPass) {
-            if (username === savedUser && password === savedPass) {
-                localStorage.setItem('f1-finanzas-loggedin', 'true');
-                loginScreen.style.display = 'none';
-
-                // Reproducir sonido de carga
-                const loadingSound = document.getElementById('loading-sound');
-                loadingSound.volume = 0.3; // Volumen al 30%
-                loadingSound.play().catch(e => console.log("Error al reproducir sonido de carga:", e));
-
-                loader.style.display = 'flex';
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                    mainContent.style.display = 'block';
-                    nav.style.display = 'flex';
-                    setupNavegacion();
-                    loadingSound.pause(); // Opcional: Detener el sonido al terminar
-                }, 2000);
-                } else {
-                alert('Usuario o contraseña incorrectos.');
-            }
-        } else {
-            alert('No existe ninguna cuenta. Por favor crea una.');
-        }
-     }else{
-            alert('¡Necesitas ingresar usuario y contraseña!');
-        }
-    });
-}
+window.addEventListener('login-success', () => {
+    setupNavegacion();
+});
 
 function initApp() {
     const splash = document.getElementById('splash-screen');
@@ -123,7 +36,7 @@ function initApp() {
     document.getElementById('splash-logo').addEventListener('animationend', () => {
         splash.style.display = 'none';
         loginScreen.style.display = 'flex';
-        setupLogin();
+        //setupLogin();
     });
 }
 
