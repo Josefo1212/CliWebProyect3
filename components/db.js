@@ -88,7 +88,7 @@ export class DBWrapper {
         });
     }
 
-    // Puedes agregar más métodos wrapper según necesidad (update, openCursor, etc.)
+
 }
 
 // Para compatibilidad con el código existente, puedes exportar una instancia:

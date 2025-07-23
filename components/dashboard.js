@@ -4,6 +4,7 @@ export class DashboardComponent {
     constructor() {
         this.dashboard = document.getElementById("dashboard");
         this.presupuestoResumenDiv = null;
+        this.demoMessageDiv = null; // <-- NUEVO
         this.render();
         // Escucha eventos personalizados para actualización en tiempo real
         window.addEventListener("transacciones-actualizadas", () => this.render());
@@ -20,7 +21,7 @@ export class DashboardComponent {
         const mes = mesSeleccionado || (document.getElementById("dashboard-mes-filtro")?.value || this.getMesActual());
         await this.renderDashboardResumen(mes);
         await this.renderTransaccionesRecientes(mes);
-        await this.renderDashboardPresupuestoActual(mes); // NUEVO
+        await this.renderDashboardPresupuestoActual(mes);
         this.renderDashboardCharts(mes);
     }
 
@@ -40,28 +41,36 @@ export class DashboardComponent {
     }
 
     async renderTransaccionesRecientes(mesSeleccionado = null) {
-    const transacciones = await dbWrapper.getAll("transacciones");
-    const mes = mesSeleccionado || this.getMesActual();
-    const recientes = transacciones
-        .filter(t => t.fecha && t.fecha.startsWith(mes))
-        .sort((a, b) => b.fecha.localeCompare(a.fecha))
-        .slice(0, 5);
-    
-    const ul = document.getElementById("transacciones-recientes-lista");
-    if (!ul) return;
-    
-    ul.innerHTML = "";
-    recientes.forEach(t => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-            <span class="fecha">${t.fecha.split('-').reverse().join('/')}</span>
-            <span class="categoria">${t.categoria}</span>
-            <span class="monto">${t.tipo === "ingreso" ? '+' : '-'}$${t.monto}</span>
-            ${t.descripcion ? `<span class="descripcion">${t.descripcion}</span>` : ''}
-        `;
-        ul.appendChild(li);
-    });
-}
+        const transacciones = await dbWrapper.getAll("transacciones");
+        const mes = mesSeleccionado || this.getMesActual();
+        // Filtra por mes y ordena por fecha descendente y por id descendente si existe
+        const recientes = transacciones
+            .filter(t => t.fecha && t.fecha.startsWith(mes))
+            .sort((a, b) => {
+                // Primero por fecha descendente
+                const cmp = b.fecha.localeCompare(a.fecha);
+                if (cmp !== 0) return cmp;
+                // Si hay id, por id descendente (más reciente primero)
+                if (b.id !== undefined && a.id !== undefined) return b.id - a.id;
+                return 0;
+            })
+            .slice(0, 5);
+
+        const ul = document.getElementById("transacciones-recientes-lista");
+        if (!ul) return;
+
+        ul.innerHTML = "";
+        recientes.forEach(t => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+                <span class="fecha">${t.fecha.split('-').reverse().join('/')}</span>
+                <span class="categoria">${t.categoria}</span>
+                <span class="monto">${t.tipo === "ingreso" ? '+' : '-'}$${t.monto}</span>
+                ${t.descripcion ? `<span class="descripcion">${t.descripcion}</span>` : ''}
+            `;
+            ul.appendChild(li);
+        });
+    }
 
     async renderDashboardPresupuestoActual(mesSeleccionado = null) {
         // Muestra el estado del presupuesto actual por categoría
@@ -144,6 +153,27 @@ export class DashboardComponent {
         const store = tx.objectStore("transacciones");
         store.count().onsuccess = async (e) => {
             const chartsDiv = document.getElementById("dashboard-charts");
+            // --- NUEVO: demo message handling ---
+            if (!this.demoMessageDiv) {
+                this.demoMessageDiv = document.createElement("div");
+                this.demoMessageDiv.id = "dashboard-demo-message";
+                this.demoMessageDiv.style.cssText = `
+                    background: #23242a;
+                    color: #ff8800;
+                    border: 2px dashed #e10600;
+                    border-radius: 8px;
+                    padding: 0.7rem 1rem;
+                    margin-bottom: 1rem;
+                    text-align: center;
+                    font-family: 'Oswald', 'Montserrat', Arial, sans-serif;
+                    font-size: 1.08rem;
+                    letter-spacing: 0.04em;
+                    display: none;
+                `;
+                if (chartsDiv && chartsDiv.parentNode) {
+                    chartsDiv.parentNode.insertBefore(this.demoMessageDiv, chartsDiv);
+                }
+            }
             // Limpia todos los gráficos existentes
             ["chart-gastos-categoria", "chart-balance-mensual", "chart-ingresos", "chart-evolucion-balance", "chart-distribucion"].forEach(id => {
                 const canvas = document.getElementById(id);
@@ -160,6 +190,11 @@ export class DashboardComponent {
             if (chartsDiv) chartsDiv.style.display = "flex";
 
             if (e.target.result === 0) {
+                // --- Mostrar mensaje de demo ---
+                if (this.demoMessageDiv) {
+                    this.demoMessageDiv.textContent = "Mostrando gráficos de demostración. Agrega transacciones para ver tus propios datos.";
+                    this.demoMessageDiv.style.display = "block";
+                }
                 // Mostrar gráficos de ejemplo
                 const c1 = document.getElementById("chart-gastos-categoria");
                 if (window.Chart && c1) {
@@ -265,6 +300,10 @@ export class DashboardComponent {
                     });
                 }
             } else {
+                // --- Ocultar mensaje de demo ---
+                if (this.demoMessageDiv) {
+                    this.demoMessageDiv.style.display = "none";
+                }
                 // Mostrar gráficos reales con datos reales
                 const transacciones = await dbWrapper.getAll("transacciones");
                 const presupuestos = db.objectStoreNames.contains("presupuestos")

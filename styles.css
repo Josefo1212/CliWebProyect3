@@ -843,3 +843,12 @@ tr:last-child td {
         font-size: 0.95rem;
     }
 }
+
+/* Ajustes para el mensaje demo */
+#dashboard-demo-message {
+    /* Si quieres sobrescribir el inline, puedes ajustar aquí */
+    /* display: none;  El display se controla por JS */
+    margin-bottom: 1rem;
+    font-weight: bold;
+    z-index: 2;
+}
