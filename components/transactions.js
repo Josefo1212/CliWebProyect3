@@ -1,5 +1,6 @@
 import { dbWrapper } from "./db.js";
 
+
 export class TransactionsComponent {
     constructor() {
         this.form = document.getElementById("form-transaccion");
@@ -44,6 +45,7 @@ export class TransactionsComponent {
         });
         filtroCat.onchange = () => this.render();
     }
+
 
     async render() {
         let transacciones = await dbWrapper.getAll("transacciones");
@@ -91,6 +93,7 @@ export class TransactionsComponent {
         );
     }
 
+    
     async handleSubmit(e) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(this.form));

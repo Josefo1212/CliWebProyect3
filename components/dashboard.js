@@ -360,7 +360,6 @@ export class DashboardComponent {
                     }
                 });
 
-                // --- Evolución del balance mensual (line) ---
                 // Balance = ingresos - egresos por mes
                 const balancePorMes = {};
                 meses.forEach(m => {

@@ -611,6 +611,7 @@ tr:last-child td {
     transition: all 0.3s;
 }
 
+
 #dashboard-transacciones-recientes li:hover {
     background: rgba(225, 6, 0, 0.1);
     transform: translateX(5px);

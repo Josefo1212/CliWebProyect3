@@ -64,6 +64,7 @@ export class DBWrapper {
         });
     }
 
+
     async delete(storeName, key) {
         const db = await this.open();
         return new Promise((resolve, reject) => {
@@ -75,6 +76,8 @@ export class DBWrapper {
         });
     }
 
+
+    
     async update(storeName, value) {
         const db = await this.open();
         return new Promise((resolve, reject) => {
