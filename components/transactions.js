@@ -92,26 +92,39 @@ export class TransactionsComponent {
     }
 
     async handleSubmit(e) {
-        e.preventDefault();
-        const data = Object.fromEntries(new FormData(this.form));
-        if (!data.tipo || !data.monto || !data.fecha || !data.categoria) return;
-        data.monto = Number(data.monto);
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(this.form));
+    if (!data.tipo || !data.monto || !data.fecha || !data.categoria) return;
+    
+    data.monto = Number(data.monto);
+    
+    try {
         if (this.editandoId) {
-            // Editar
+            // Editar transacción
             data.id = this.editandoId;
             await dbWrapper.delete("transacciones", data.id);
             await dbWrapper.add("transacciones", data);
             this.editandoId = null;
             this.form.querySelector("button[type=submit]").textContent = "Registrar";
         } else {
-            // Nuevo
+            // Nueva transacción
             data.id = Date.now().toString() + Math.random().toString(16).slice(2);
             await dbWrapper.add("transacciones", data);
         }
+        
+        // Reproducir sonido al completar
+        const audio = document.getElementById('transaction-sound');
+        audio.currentTime = 0; // Reiniciar si ya estaba sonando
+        audio.volume = 0.5; // Volumen al 50%
+        await audio.play().catch(e => console.log("Error al reproducir sonido:", e));
+        
         this.form.reset();
         this.render();
         window.dispatchEvent(new Event("transacciones-actualizadas"));
+    } catch (error) {
+        console.error("Error al guardar transacción:", error);
     }
+}
 
     async cargarEdicion(id) {
         const t = await dbWrapper.get("transacciones", id);

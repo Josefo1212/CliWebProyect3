@@ -40,21 +40,28 @@ export class DashboardComponent {
     }
 
     async renderTransaccionesRecientes(mesSeleccionado = null) {
-        const transacciones = await dbWrapper.getAll("transacciones");
-        const mes = mesSeleccionado || this.getMesActual();
-        const recientes = transacciones
-            .filter(t => t.fecha && t.fecha.startsWith(mes))
-            .sort((a, b) => b.fecha.localeCompare(a.fecha))
-            .slice(0, 5);
-        const ul = document.getElementById("transacciones-recientes-lista");
-        if (!ul) return;
-        ul.innerHTML = "";
-        recientes.forEach(t => {
-            const li = document.createElement("li");
-            li.textContent = `${t.fecha} - ${t.tipo === "ingreso" ? "+" : "-"}${t.monto} (${t.categoria})${t.descripcion ? ": " + t.descripcion : ""}`;
-            ul.appendChild(li);
-        });
-    }
+    const transacciones = await dbWrapper.getAll("transacciones");
+    const mes = mesSeleccionado || this.getMesActual();
+    const recientes = transacciones
+        .filter(t => t.fecha && t.fecha.startsWith(mes))
+        .sort((a, b) => b.fecha.localeCompare(a.fecha))
+        .slice(0, 5);
+    
+    const ul = document.getElementById("transacciones-recientes-lista");
+    if (!ul) return;
+    
+    ul.innerHTML = "";
+    recientes.forEach(t => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            <span class="fecha">${t.fecha.split('-').reverse().join('/')}</span>
+            <span class="categoria">${t.categoria}</span>
+            <span class="monto">${t.tipo === "ingreso" ? '+' : '-'}$${t.monto}</span>
+            ${t.descripcion ? `<span class="descripcion">${t.descripcion}</span>` : ''}
+        `;
+        ul.appendChild(li);
+    });
+}
 
     async renderDashboardPresupuestoActual(mesSeleccionado = null) {
         // Muestra el estado del presupuesto actual por categoría

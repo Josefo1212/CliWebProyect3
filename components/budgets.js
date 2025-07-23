@@ -80,23 +80,27 @@ export class BudgetsComponent {
     }
 
     async handleSubmit(e) {
-        e.preventDefault();
-        const data = Object.fromEntries(new FormData(this.form));
-        if (!data.tipo || !data.monto || !data.mes) return;
-        data.monto = parseFloat(data.monto);
-        if (isNaN(data.monto) || data.monto <= 0) return;
-        if (!data.categoria) return;
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(this.form));
+    if (!data.tipo || !data.monto || !data.mes) return;
+    
+    data.monto = parseFloat(data.monto);
+    if (isNaN(data.monto) || data.monto <= 0) return;
+    if (!data.categoria) return;
+    
+    try {
         if (this.editandoId) {
+            // Editar presupuesto
             data.id = this.editandoId;
             await dbWrapper.update("presupuestos", data);
             this.editandoId = null;
             this.form.querySelector("button[type=submit]").textContent = "Asignar";
         } else {
-            // Evita duplicados por tipo/categoria/mes
+            // Validar duplicados
             const presupuestos = await dbWrapper.getAll("presupuestos");
-            const existe = presupuestos.find(p =>
-                p.tipo === data.tipo &&
-                p.categoria === data.categoria &&
+            const existe = presupuestos.find(p => 
+                p.tipo === data.tipo && 
+                p.categoria === data.categoria && 
                 p.mes === data.mes
             );
             if (existe) {
@@ -106,10 +110,20 @@ export class BudgetsComponent {
             data.id = Date.now().toString() + Math.random().toString(16).slice(2);
             await dbWrapper.add("presupuestos", data);
         }
+        
+        // Reproducir sonido al completar
+        const audio = document.getElementById('transaction-sound');
+        audio.currentTime = 0;
+        audio.volume = 0.5;
+        await audio.play().catch(e => console.log("Error al reproducir sonido:", e));
+        
         this.form.reset();
         this.render();
         window.dispatchEvent(new Event("presupuestos-actualizados"));
+    } catch (error) {
+        console.error("Error al guardar presupuesto:", error);
     }
+}
 
     async cargarEdicion(id) {
         const p = await dbWrapper.get("presupuestos", id);

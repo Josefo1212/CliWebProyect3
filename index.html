@@ -8,6 +8,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <div id="splash-screen" style="display: none;">
+    <img src="assets/f1.png" alt="F1 Logo" id="splash-logo">
+</div>
     <nav>
         <img src="assets/f1.png" alt="F1 Logo">
         <ul>
@@ -18,7 +21,7 @@
         </ul>
     </nav> 
 
-    <div id="login-screen" style="display: flex;">
+    <div id="login-screen" style="display:none;">
         <div class="login-container">
             <img src="assets/f1.png" alt="F1 Logo" class="login-logo">
             <h2>PIT STOP FINANZAS</h2>
@@ -27,6 +30,19 @@
                 <input type="password" id="login-password" placeholder="Contraseña" required>
                 <button id="login-submit" type="submit">INICIAR SESIÓN</button>
             </form>
+            <button id="show-create-account" type="button" class="secondary-btn">Crear cuenta</button>
+        </div>
+    </div>
+    <div id="create-account-screen" style="display:none;">
+        <div class="login-container">
+            <img src="assets/f1.png" alt="F1 Logo" class="login-logo">
+            <h2>Crear cuenta</h2>
+            <form id="create-account-form" autocomplete="off">
+                <input type="text" id="create-username" placeholder="Nuevo usuario" required>
+                <input type="password" id="create-password" placeholder="Nueva contraseña" required>
+                <button id="create-account-submit" type="submit">Registrar</button>
+            </form>
+            <button id="back-to-login" type="button" class="secondary-btn">Volver</button>
         </div>
     </div>
     <div id="loader" style="display:none;">
@@ -83,6 +99,7 @@
             <table id="tabla-transacciones">
                 <thead>
                     <tr>
+                        
                         <th>Tipo</th>
                         <th>Monto</th>
                         <th>Fecha</th>
@@ -140,4 +157,10 @@
     </main>
     <script type="module" src="./index.js"></script>
 </body>
+<audio id="loading-sound" preload="auto">
+  <source src="assets/audio/sonido.mp3" type="audio/mpeg">
+</audio>
+<audio id="transaction-sound" preload="auto">
+  <source src="assets/audio/boxbox.mp3" type="audio/mpeg">
+</audio>
 </html>
