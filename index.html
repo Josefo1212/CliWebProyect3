@@ -89,7 +89,11 @@
                 <button type="submit">Registrar</button>
             </form>
             <div>
-                <input type="text" id="filtro-descripcion" placeholder="Buscar por descripción o categoría">
+                <input type="text" id="filtro-descripcion" placeholder="Buscar por descripción">
+                <select id="filtro-categoria" class="filtro-categoria">
+                    <option value="">Todas las categorías</option>
+                    <!-- Las opciones se llenan dinámicamente -->
+                </select>
                 <select id="filtro-tipo">
                     <option value="">Todos</option>
                     <option value="ingreso">Ingresos</option>

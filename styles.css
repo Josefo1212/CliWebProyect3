@@ -270,6 +270,22 @@ form input:focus, form select:focus{
     font-family: 'Montserrat', Arial, sans-serif;
 }
 
+#lista-categorias .categoria-nombre {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#lista-categorias .categoria-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    min-width: 120px;
+    justify-content: flex-end;
+}
+
 /* Filtros */
 #filtro-descripcion, #filtro-tipo{
     margin: 0.5rem 0.5rem 0.5rem 0;
@@ -279,6 +295,23 @@ form input:focus, form select:focus{
     background: #23242a;
     color: #fff;
     font-family: inherit;
+}
+#filtro-categoria, .filtro-categoria {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1.5px solid #e10600;
+    background: #23242a;
+    color: #fff;
+    font-family: inherit;
+    margin: 0.5rem 0.5rem 0.5rem 0;
+    font-size: 1rem;
+    min-width: 140px;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+#filtro-categoria:focus, .filtro-categoria:focus {
+    border: 1.5px solid #fff;
+    outline: none;
+    box-shadow: 0 0 0 2px #e1060030;
 }
 
 /* Tablas */

@@ -17,24 +17,16 @@ export class TransactionsComponent {
         this.filtroDescripcion.addEventListener("input", () => this.render());
         this.filtroTipo.addEventListener("change", () => this.render());
         // Agrega filtro por categoría
-        this.agregarFiltroCategoria();
+        this.filtroCategoria = document.getElementById("filtro-categoria");
+        await this.rellenarFiltroCategoria();
+        this.filtroCategoria.addEventListener("change", () => this.render());
         this.render();
     }
 
-    async agregarFiltroCategoria() {
-        // Crea select de filtro por categoría
-        const formDiv = this.form.parentElement.querySelector("div");
-        if (!formDiv) return;
-        let filtroCat = document.getElementById("filtro-categoria");
-        if (!filtroCat) {
-            filtroCat = document.createElement("select");
-            filtroCat.id = "filtro-categoria";
-            filtroCat.innerHTML = '<option value="">Todas las categorías</option>';
-            filtroCat.style.marginRight = "0.5rem";
-            formDiv.insertBefore(filtroCat, formDiv.firstChild);
-        }
-        this.filtroCategoria = filtroCat;
-        // Rellena opciones
+    async rellenarFiltroCategoria() {
+        const filtroCat = this.filtroCategoria;
+        if (!filtroCat) return;
+        filtroCat.innerHTML = '<option value="">Todas las categorías</option>';
         const categorias = await dbWrapper.getAll("categorias");
         categorias.forEach(cat => {
             const opt = document.createElement("option");
@@ -42,7 +34,6 @@ export class TransactionsComponent {
             opt.textContent = cat.nombre;
             filtroCat.appendChild(opt);
         });
-        filtroCat.onchange = () => this.render();
     }
 
 
@@ -54,8 +45,7 @@ export class TransactionsComponent {
         const filtroCategoria = this.filtroCategoria ? this.filtroCategoria.value : "";
         if (filtroDesc) {
             transacciones = transacciones.filter(t =>
-                (t.descripcion && t.descripcion.toLowerCase().includes(filtroDesc)) ||
-                (t.categoria && t.categoria.toLowerCase().includes(filtroDesc))
+                (t.descripcion && t.descripcion.toLowerCase().includes(filtroDesc))
             );
         }
         if (filtroTipo) {
@@ -147,3 +137,4 @@ export class TransactionsComponent {
         window.dispatchEvent(new Event("transacciones-actualizadas"));
     }
 }
+

@@ -49,7 +49,15 @@ export class CategoriaComponent {
                     this.render();
                 };
             } else {
-                li.textContent = cat.nombre;
+                // Nombre de la categoría alineado a la izquierda
+                const nombreSpan = document.createElement("span");
+                nombreSpan.className = "categoria-nombre";
+                nombreSpan.textContent = cat.nombre;
+
+                // Contenedor de botones alineados a la derecha
+                const actionsDiv = document.createElement("div");
+                actionsDiv.className = "categoria-actions";
+
                 const btnEditar = document.createElement("button");
                 btnEditar.textContent = "Editar";
                 btnEditar.onclick = () => {
@@ -59,8 +67,12 @@ export class CategoriaComponent {
                 const btnEliminar = document.createElement("button");
                 btnEliminar.textContent = "Eliminar";
                 btnEliminar.onclick = () => this.eliminarCategoria(cat.nombre);
-                li.appendChild(btnEditar);
-                li.appendChild(btnEliminar);
+
+                actionsDiv.appendChild(btnEditar);
+                actionsDiv.appendChild(btnEliminar);
+
+                li.appendChild(nombreSpan);
+                li.appendChild(actionsDiv);
             }
             this.lista.appendChild(li);
         });
